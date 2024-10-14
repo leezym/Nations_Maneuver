@@ -1,0 +1,5 @@
+D:/Proyectos Unity/Nations_Maneuver/.utmp/RelWithDebInfo/3a1i1yr4/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Proyectos Unity/Nations_Maneuver/.utmp/RelWithDebInfo/3a1i1yr4/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+D:/Proyectos Unity/Nations_Maneuver/.utmp/RelWithDebInfo/3a1i1yr4/armeabi-v7a/FramePacing/CMakeFiles/swappywrapper.dir
+D:/Proyectos Unity/Nations_Maneuver/.utmp/RelWithDebInfo/3a1i1yr4/armeabi-v7a/FramePacing/CMakeFiles/edit_cache.dir
+D:/Proyectos Unity/Nations_Maneuver/.utmp/RelWithDebInfo/3a1i1yr4/armeabi-v7a/FramePacing/CMakeFiles/rebuild_cache.dir

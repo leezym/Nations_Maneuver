@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 OPR/112.0.0.0" version="24.7.7">
+  <diagram name="Página-1" id="HT6YK4rW6dHHV8FSswbW">
+    <mxGraphModel dx="1009" dy="539" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-13" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="340" y="60" width="370" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-1" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.user;" vertex="1" parent="1">
+          <mxGeometry x="150" y="134.75" width="75.25" height="75.25" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-5" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="360" y="110" width="60" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-2" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.devices.cell_phone_android_proportional;" vertex="1" parent="lphWiRB0ap0t4Hr-XkLs-5">
+          <mxGeometry x="-3.23" y="-12" width="63.23" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-4" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://cdn.worldvectorlogo.com/logos/unity-69.svg;" vertex="1" parent="lphWiRB0ap0t4Hr-XkLs-5">
+          <mxGeometry x="6.95" y="31.979999999999997" width="42.86" height="44.04" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-6" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="180" as="sourcePoint" />
+            <mxPoint x="330" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-7" value="Usuario" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="159" y="212.75" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-8" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;UnityEngine" style="shape=module;align=left;spacingLeft=20;align=center;verticalAlign=top;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="145" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-9" value="Movil app" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="355" y="228" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-11" value="PayerPrefs" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="620" y="134.75" width="70" height="70.5" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="lphWiRB0ap0t4Hr-XkLs-8" target="lphWiRB0ap0t4Hr-XkLs-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lphWiRB0ap0t4Hr-XkLs-14" value="Unity" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="500" y="60" width="50" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

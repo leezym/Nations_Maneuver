@@ -10,16 +10,7 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontNames:
   - Josefin Slab
-  fallbackFontReferences:
-  - {fileID: 12800000, guid: 62e98944c947e9d4abd10cab97930667, type: 3}
-  - {fileID: 12800000, guid: 99af5626ddd771d469eac72b2cf46d46, type: 3}
-  - {fileID: 12800000, guid: 9431d1161f95b3a4eb0dba28df7cf198, type: 3}
-  - {fileID: 12800000, guid: 6a9bcdb38f4c6ac40aeafd6601927174, type: 3}
-  - {fileID: 12800000, guid: 75036f75b9d4f7a40b1fe4858e70a8ba, type: 3}
-  - {fileID: 12800000, guid: b9f0ad81a9b79cf4c851299d2e95d3b7, type: 3}
-  - {fileID: 12800000, guid: 6921443b1de492640a5581ef83069cc3, type: 3}
-  - {fileID: 12800000, guid: e5390f68baacda04499443faa20eee2d, type: 3}
-  - {fileID: 12800000, guid: f0e85d18183cabf488963a04e07b87c0, type: 3}
+  fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

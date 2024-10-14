@@ -11,20 +11,28 @@ public class GameLoadManager : MonoBehaviour
 
     public static int SHIFTS = 10;
 
-    int shift => EconomicModel.Instance.shift;
+    int shift => EconomicModel.Instance.GetShift();
     TMP_Text shiftText => EconomicModel.Instance.shiftText;
     TMP_Text shiftText2 => EconomicModel.Instance.shiftText2;
     Button continuarPartidaButton => EconomicModel.Instance.continuarPartidaButton;
 
+    [Header("UI Screen")]
+    public UI_Screen eventosScreen;
     public UI_Screen datosScreen;
 
-    public bool finishedGame;
-    public void SetFinishedGame(bool finishedGame) {this.finishedGame = finishedGame; }
-
+    [Header("UI Players")]
     public Button greenPlayerButton;
     public Button bluePlayerButton;
     public Button orangePlayerButton;
     public Button redPlayerButton;
+
+    bool finishedGame;
+    public bool GetFinishedGame() { return finishedGame; }
+    public void SetFinishedGame(bool finishedGame) { this.finishedGame = finishedGame; }
+
+    bool appliedEvent;
+    public bool GetAppliedEvent() { return appliedEvent; }
+    public void SetAppliedEvent(bool appliedEvent) { this.appliedEvent = appliedEvent; }
 
     private void Awake()
     {
@@ -76,20 +84,29 @@ public class GameLoadManager : MonoBehaviour
     {
         if(shift <= SHIFTS)
         {
-            shiftText.text = "Turno "+shift.ToString();
-            shiftText2.text = "Indicadores de tu Estado\nTurno "+shift.ToString();
+            shiftText.text = "Turno " + shift.ToString();
+            shiftText2.text = "Indicadores de tu Estado\nTurno " + (shift-1).ToString();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
             ExitApp();
     }
 
+    public void ContinueGame()
+    {
+        SetAppliedEvent(PlayerPrefs.GetInt("appliedEvent") == 1 ? true : false);
+
+        if(GetAppliedEvent())
+            UI_System.Instance.SwitchScreens(datosScreen);
+        else
+            UI_System.Instance.SwitchScreens(eventosScreen);        
+    }
+
     public void NextShift()
     {
         NotificationsManager.Instance.QuestionNotifications("¿Quieres pasar al siguiente turno?");
         NotificationsManager.Instance.SetYesButton(()=>{
-            EconomicModel.Instance.SetShift(shift+1);
-            UI_System.Instance.SwitchScreens(datosScreen);
+            UI_System.Instance.SwitchScreens(eventosScreen);
         });
     }
 
@@ -98,6 +115,7 @@ public class GameLoadManager : MonoBehaviour
         NotificationsManager.Instance.QuestionNotifications("¿Esta seguro que quiere acabar la partida antes de terminar los 10 turnos?");
         NotificationsManager.Instance.SetYesButton(()=> {
             PlayerPrefs.SetInt("finishedGame", finishedGame ? 1 : 0);
+            PlayerPrefs.SetInt("appliedEvent", appliedEvent ? 1 : 0);
 
             EconomicModel.Instance.SaveLocalData();
             WindowGraph.Instance.SaveLocalData();

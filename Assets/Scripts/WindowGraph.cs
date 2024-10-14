@@ -27,13 +27,13 @@ public class Datos
 {
     public double G;
     public double t;
-    public double OMA;
+    public double M;
 
-    public Datos(double G, double t, double OMA)
+    public Datos(double G, double t, double M)
     {        
         this.G = G;
         this.t = t;
-        this.OMA = OMA;
+        this.M = M;
     }
 }
 
@@ -42,14 +42,12 @@ public class Resultados
 {
     public double y;
     public double inf;
-    public double r;
     public double BF;
 
-    public Resultados(double y, double inf, double r, double BF)
+    public Resultados(double y, double inf, double BF)
     {        
         this.y = y;
         this.inf = inf;
-        this.r = r;
         this.BF = BF;
     }
 }
@@ -64,16 +62,22 @@ public class WindowGraph : MonoBehaviour
     float yMininum;
 
 
-    [Header("ELEMENTOS")]
-    [SerializeField] private Sprite circleSprite;
-    [SerializeField] private Sprite[] barSprites;
+    [Header("UI Graph")]    
+    public Button defaultButton;
+    public RectTransform graphGameObject;
     public RectTransform axisXContainer;
     public RectTransform graphContainer;
+
+    [Header("UI Graph Container")]
     public RectTransform zeroLine;
-    public List<Turnos> shiftsList;
-    public Button defaultButton;
     public GameObject label;
-    public RectTransform graphGameObject;
+
+    [Header("UI Graph Items")]
+    [SerializeField] private Sprite circleSprite;
+    [SerializeField] private Sprite[] barSprites;
+    
+    [HideInInspector]
+    public List<Turnos> shiftsList;
     List<GameObject> resultGameObjects = new List<GameObject>();
                         
     public void ShowDefaultGraph() => defaultButton.onClick.Invoke();
@@ -106,6 +110,13 @@ public class WindowGraph : MonoBehaviour
         shiftsList = JsonConvert.DeserializeObject<List<Turnos>>(jsonShiftsList);
     }
 
+    public void SetHeight(Transform t)
+    {
+        Vector3 scale = t.localScale;
+        scale.y = 117;
+        t.localScale = scale;
+    }
+
     public void CreateGraph(int value)
     {
         DeleteGraph();
@@ -113,8 +124,8 @@ public class WindowGraph : MonoBehaviour
                
         if(shiftsList.Count > 0)
         {
-            yMaximum = (float)shiftsList.Max(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : value == 2 ? turno.resultados.r : turno.resultados.BF)); //valor maximo de los turnos actuales
-            yMininum = (float)shiftsList.Min(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : value == 2 ? turno.resultados.r : turno.resultados.BF)); //valor minimo de los turnos actuales
+            yMaximum = (float)shiftsList.Max(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.BF)); //valor maximo de los turnos actuales
+            yMininum = (float)shiftsList.Min(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.BF)); //valor minimo de los turnos actuales
 
             yMaximum = (yMaximum > 0 ? yMaximum : 0);
             yMininum = (yMininum < 0 ? yMininum : 0);
@@ -126,7 +137,7 @@ public class WindowGraph : MonoBehaviour
         for (int i = 0; i < shiftsList.Count; i++) {
             Resultados resultado = shiftsList[i].resultados;
 
-            double yValue = (value == 0 ? resultado.y : value == 1 ? resultado.inf : value == 2 ? resultado.r : resultado.BF);
+            double yValue = (value == 0 ? resultado.y : value == 1 ? resultado.inf : resultado.BF);
 
             float xPosition = (i + 1) * (graphWidth / shiftsList.Count);
             float yPosition = (((float)yValue - yMininum) / (yMaximum - yMininum)) * graphHeight;
