@@ -14,6 +14,7 @@ public class GameLoadManager : MonoBehaviour
     int shift => EconomicModel.Instance.GetShift();
     TMP_Text shiftText => EconomicModel.Instance.shiftText;
     TMP_Text shiftText2 => EconomicModel.Instance.shiftText2;
+    TMP_Text eventText => Events.Instance.eventText;
     Button continuarPartidaButton => EconomicModel.Instance.continuarPartidaButton;
 
     [Header("UI Screen")]
@@ -85,6 +86,7 @@ public class GameLoadManager : MonoBehaviour
         if(shift <= SHIFTS)
         {
             shiftText.text = "Turno " + shift.ToString();
+            eventText.text = "Fase de Eventos\nAño " + shift.ToString();
             shiftText2.text = "Indicadores de tu Estado\nTurno " + (shift-1).ToString();
         }
 

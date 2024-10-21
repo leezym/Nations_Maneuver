@@ -143,7 +143,7 @@ public class EconomicModel : MonoBehaviour
     {
         GameLoadManager.Instance.SetFinishedGame(false);
 
-        shift = 1;
+        SetShift(1);
         initialGuess = new double[] { 800, 0.05, 1.1 }; // valores iniciales (y,r,p)
 
         calcularButton.gameObject.SetActive(true);
@@ -235,7 +235,7 @@ public class EconomicModel : MonoBehaviour
                 GenerateReport();
                 
                 UI_System.Instance.SwitchScreens(resultadosScreen);
-                SetShift(shift+1);
+                shift+=1;
             });
 
         }

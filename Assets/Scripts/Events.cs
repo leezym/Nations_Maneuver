@@ -32,11 +32,23 @@ public enum OpcionesCambios
 
 public class Events : MonoBehaviour
 {
+    public static Events Instance {get; private set;}
     UI_Screen datosScreen => GameLoadManager.Instance.datosScreen;
+    public TMP_Text eventText;
     public Cards[] cards = new Cards[18];
 
-    public void SetResultsValue(int index)
+    void Awake()
     {
+        if(Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;    
+    }
+
+    public void SetResultsValue()
+    {
+        int index = 0;
+        //Como cada carta va en un areglo, al ser cliqueada identificar a que posición del arreglo pertenece esa carta para asignarle ese valor a index
         NotificationsManager.Instance.QuestionNotifications("¿Es la carta que se ha destapado para este año en el tablero central del juego?");
         NotificationsManager.Instance.SetYesButton(() =>
         {
@@ -56,6 +68,8 @@ public class Events : MonoBehaviour
             }
 
             UI_System.Instance.SwitchScreens(datosScreen);
+            NotificationsManager.Instance.WarningNotifications("Los nuevos valores son:\nVariación PIB: "+EconomicModel.Instance.y+
+                "\nTasa infleación: "+EconomicModel.Instance.inf+"\nBalance fiscal: "+EconomicModel.Instance.BF);
         });
     }
     
