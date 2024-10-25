@@ -141,9 +141,7 @@ public class EconomicModel : MonoBehaviour
 
     public void NewGame()
     {
-        GameLoadManager.Instance.SetFinishedGame(false);
-
-        SetShift(1);
+        shift = 1;
         initialGuess = new double[] { 800, 0.05, 1.1 }; // valores iniciales (y,r,p)
 
         calcularButton.gameObject.SetActive(true);
@@ -155,17 +153,17 @@ public class EconomicModel : MonoBehaviour
         t = inputValidations.limInfTasaImp + UnityEngine.Random.Range(0, 11) * inputValidations.stepTasaImp; // tasa impositiva
         M = inputValidations.limInfOma + UnityEngine.Random.Range(0, 10) * inputValidations.stepOma; // bonos
 
+        Debug.Log("ALEATORIO\nG: "+G+"t: "+t+"M: "+M);
+
         DefineSimplifications(G, t, M);
         finalGuess = SolveEquations(initialGuess);
         initialGuess = finalGuess;
+        Debug.Log("INITIAL: "+initialGuess[0]+","+initialGuess[1]+","+initialGuess[2]);
+
     }
 
     public void ContinueGame()
     {
-        WindowGraph.Instance.GetLocalData();
-
-        GameLoadManager.Instance.SetFinishedGame(PlayerPrefs.GetInt("finishedGame") == 1 ? true : false);
-
         string[] formattedInitialGuess = PlayerPrefs.GetString("initialGuess").Split('-');
         initialGuess = new double[formattedInitialGuess.Length];
 
@@ -230,9 +228,14 @@ public class EconomicModel : MonoBehaviour
                 t = Convert.ToDouble(textTasaImp.text); // tasa impositiva
                 M = (toggleCompra.isOn ? M + Convert.ToDouble(textOma.text) : M - Convert.ToDouble(textOma.text)); // bonos
 
+                Debug.Log("G: "+G+"t: "+t+"M: "+M);
+
+
                 DefineSimplifications(G, t, M);
                 finalGuess = SolveEquations(initialGuess);
                 GenerateReport();
+
+                Debug.Log("INITIAL: "+finalGuess[0]+","+finalGuess[1]+","+finalGuess[2]);
                 
                 UI_System.Instance.SwitchScreens(resultadosScreen);
                 shift+=1;
@@ -290,8 +293,8 @@ public class EconomicModel : MonoBehaviour
         double pInicial = initialGuess[2];  // precio inicial
 
         variacionPIB = ((yFinal - yInicial) / yInicial) * 100; // variacion PIB
-        inf = ((pFinal - pInicial) / pInicial) * 100; // inflacion
-        BF = (t * y) - G; // balance fiscal
+        inf = ((pFinal - pInicial) / pInicial) * 100; // inflacion ?????????
+        BF = (t * y) - G; // balance fiscal ???????????
     }
 
     public void GenerateReport() 

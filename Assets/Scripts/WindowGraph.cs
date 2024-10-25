@@ -56,6 +56,8 @@ public class WindowGraph : MonoBehaviour
 {
     public static WindowGraph Instance {get; private set;}
     static Color color = Color.black;
+    static int X_SIZE_BAR = 50;
+    
     float graphWidth;
     float graphHeight;
     float yMaximum;
@@ -96,6 +98,11 @@ public class WindowGraph : MonoBehaviour
         yMininum = 0;
         graphWidth = graphContainer.rect.width - 120; // Margen para que el label se vea
         graphHeight = graphContainer.rect.height;
+    }
+
+    public void ContinueGame()
+    {
+        GetLocalData();
     }
 
     public void SaveLocalData()
@@ -139,7 +146,7 @@ public class WindowGraph : MonoBehaviour
 
             double yValue = (value == 0 ? resultado.y : value == 1 ? resultado.inf : resultado.BF);
 
-            float xPosition = (i + 1) * (graphWidth / shiftsList.Count);
+            float xPosition = (i + 1) * (graphWidth / GameLoadManager.SHIFTS);
             float yPosition = (((float)yValue - yMininum) / (yMaximum - yMininum)) * graphHeight;
            
             GameObject[] barGameObject = CreateBar(value, 0, xPosition, yPosition, zeroPosition, yValue);
@@ -148,9 +155,6 @@ public class WindowGraph : MonoBehaviour
 
             GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition));
             resultGameObjects.Add(circleGameObject);
-
-            GameObject numberGameObject = CreateNumber(i+1, xPosition);
-            resultGameObjects.Add(numberGameObject);
 
             if (lastCircleGameObject != null) {
                 GameObject dotConnection = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
@@ -186,44 +190,20 @@ public class WindowGraph : MonoBehaviour
         
         RectTransform rectTransform = gameObjectBar.GetComponent<RectTransform>();        
         rectTransform.anchoredPosition = new Vector2(xPosition, yPosition);
-        rectTransform.sizeDelta = new Vector2(30, ySize);
+        rectTransform.sizeDelta = new Vector2(X_SIZE_BAR, ySize);
         rectTransform.pivot = new Vector2(0.5f, 0);
         rectTransform.anchorMin = Vector2.zero;
         rectTransform.anchorMax = Vector2.zero;
 
-        EventTrigger eventTrigger = gameObjectBar.AddComponent<EventTrigger>();
-        
-        EventTrigger.Entry entryPointerEnter = new EventTrigger.Entry();
-        entryPointerEnter.eventID = EventTriggerType.PointerEnter;
-        entryPointerEnter.callback.AddListener((data) => { gameObjectLabel.SetActive(true); });
-        eventTrigger.triggers.Add(entryPointerEnter);
-
-        EventTrigger.Entry entryPointerExit = new EventTrigger.Entry();
-        entryPointerExit.eventID = EventTriggerType.PointerExit;
-        entryPointerExit.callback.AddListener((data) => { gameObjectLabel.SetActive(false); });
-        eventTrigger.triggers.Add(entryPointerExit);
+        Button button = gameObjectBar.AddComponent<Button>();
+        button.onClick.AddListener(() => {
+            if(gameObjectLabel.activeSelf)
+                gameObjectLabel.SetActive(false);
+            else
+                gameObjectLabel.SetActive(true);
+        });
 
         return new GameObject[] {gameObjectBar, gameObjectLabel};
-    }
-
-    private GameObject CreateNumber(int value, float xPosition)
-    {
-        GameObject gameObject = new GameObject("number");
-        gameObject.transform.SetParent(axisXContainer, false);
-
-        TextMeshProUGUI textComponent = gameObject.AddComponent<TextMeshProUGUI>();
-        textComponent.alignment = TextAlignmentOptions.Center;
-        textComponent.text = value.ToString();
-        textComponent.fontSize = 25;
-
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = new Vector2(xPosition, 25);
-        rectTransform.sizeDelta = new Vector2(30, 30);
-        rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.zero;
-
-        return gameObject;
     }
 
     private GameObject CreateCircle(Vector2 anchoredPosition)
@@ -278,5 +258,5 @@ public class WindowGraph : MonoBehaviour
         {
             Destroy(resultGameObjects[i]);
         }
-    }    
+    }
 }

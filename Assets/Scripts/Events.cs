@@ -11,7 +11,7 @@ using UnityEngine.EventSystems;
 [Serializable]
 public class Cards
 {
-    public Image imagen;
+    public GameObject carta;
     public OpcionesResultados opcionesResultados;
     public OpcionesCambios opcionesCambios;
     public double valor;
@@ -21,7 +21,8 @@ public enum OpcionesResultados
 {
     PIB, // y
     Tasa_Inflacion, // inf
-    Balance_Fiscal // BF
+    Gasto_Publico, // G
+    Tasa_Impositiva // t
 }
 
 public enum OpcionesCambios
@@ -45,9 +46,20 @@ public class Events : MonoBehaviour
             Instance = this;    
     }
 
-    public void SetResultsValue()
+    void Start()
     {
-        int index = 0;
+        for (int i = 0; i < cards.Length; i++)
+        {
+            int index = i;
+            cards[index].carta.GetComponent<Button>().onClick.AddListener(() => {
+                GameLoadManager.Instance.SetAppliedEvent(true);
+                SetResultsValue(index);
+            });
+        }
+    }
+
+    public void SetResultsValue(int index)
+    {
         //Como cada carta va en un areglo, al ser cliqueada identificar a que posición del arreglo pertenece esa carta para asignarle ese valor a index
         NotificationsManager.Instance.QuestionNotifications("¿Es la carta que se ha destapado para este año en el tablero central del juego?");
         NotificationsManager.Instance.SetYesButton(() =>
@@ -62,14 +74,23 @@ public class Events : MonoBehaviour
                 case OpcionesResultados.Tasa_Inflacion:
                     EconomicModel.Instance.inf += cambio;
                     break;
-                case OpcionesResultados.Balance_Fiscal:
-                    EconomicModel.Instance.BF += cambio;
+                case OpcionesResultados.Gasto_Publico:
+                    EconomicModel.Instance.G += cambio;
                     break;
+                case OpcionesResultados.Tasa_Impositiva:
+                    EconomicModel.Instance.t += cambio;
+                    break;
+                    
             }
 
             UI_System.Instance.SwitchScreens(datosScreen);
-            NotificationsManager.Instance.WarningNotifications("Los nuevos valores son:\nVariación PIB: "+EconomicModel.Instance.y+
-                "\nTasa infleación: "+EconomicModel.Instance.inf+"\nBalance fiscal: "+EconomicModel.Instance.BF);
+            NotificationsManager.Instance.WarningNotifications(
+                "Los nuevos valores son:\nPIB: "+EconomicModel.Instance.y.ToString("F2")+
+                "\nTasa inflación: "+EconomicModel.Instance.inf.ToString("F2")+
+                "\nBalance fiscal: "+EconomicModel.Instance.BF.ToString("F2")+
+                "\nGasto público: "+EconomicModel.Instance.G.ToString("F2")+
+                "\nTasa impositiva: "+EconomicModel.Instance.t.ToString("F2")
+            );
         });
     }
     

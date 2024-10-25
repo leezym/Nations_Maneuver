@@ -83,19 +83,23 @@ public class GameLoadManager : MonoBehaviour
 
     void Update()
     {
-        if(shift <= SHIFTS)
-        {
-            shiftText.text = "Turno " + shift.ToString();
-            eventText.text = "Fase de Eventos\nAño " + shift.ToString();
-            shiftText2.text = "Indicadores de tu Estado\nTurno " + (shift-1).ToString();
-        }
-
         if (Input.GetKeyDown(KeyCode.Escape))
             ExitApp();
     }
 
+    public void NewGame()
+    {        
+        EconomicModel.Instance.NewGame();
+        SetFinishedGame(false);
+        UpdateShift();
+    }
+
     public void ContinueGame()
     {
+        WindowGraph.Instance.ContinueGame();
+        EconomicModel.Instance.ContinueGame();
+        UpdateShift();
+        SetFinishedGame(PlayerPrefs.GetInt("finishedGame") == 1 ? true : false);
         SetAppliedEvent(PlayerPrefs.GetInt("appliedEvent") == 1 ? true : false);
 
         if(GetAppliedEvent())
@@ -109,9 +113,19 @@ public class GameLoadManager : MonoBehaviour
         NotificationsManager.Instance.QuestionNotifications("¿Quieres pasar al siguiente turno?");
         NotificationsManager.Instance.SetYesButton(()=>{
             UI_System.Instance.SwitchScreens(eventosScreen);
+            shiftText.text = "Turno " + shift.ToString();
+            eventText.text = "Fase de Eventos\nAño " + shift.ToString();
+            shiftText2.text = "Indicadores de tu Estado\nTurno " + shift.ToString();
         });
     }
 
+    public void UpdateShift()
+    {
+        shiftText.text = "Año " + shift.ToString();
+        eventText.text = "Fase de Eventos\nAño " + shift.ToString();
+        shiftText2.text = "Indicadores de tu Estado\nAño " + shift.ToString();
+    }
+    
     public void ExitApp()
     {
         NotificationsManager.Instance.QuestionNotifications("¿Esta seguro que quiere acabar la partida antes de terminar los 10 turnos?");
