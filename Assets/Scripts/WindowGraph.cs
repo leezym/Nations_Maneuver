@@ -63,6 +63,10 @@ public class WindowGraph : MonoBehaviour
     float yMaximum;
     float yMininum;
 
+    [Header("UI Data")] 
+    public TMP_Text currentPIB;
+    public TMP_Text currentTInf;
+    public TMP_Text currentBF;
 
     [Header("UI Graph")]    
     public Button defaultButton;
@@ -164,6 +168,9 @@ public class WindowGraph : MonoBehaviour
         }       
 
         zeroLine.transform.SetAsLastSibling();
+        currentPIB.text = shiftsList[shiftsList.Count - 1].resultados.y.ToString("F2");
+        currentTInf.text = shiftsList[shiftsList.Count - 1].resultados.inf.ToString("F2");
+        currentBF.text = shiftsList[shiftsList.Count - 1].resultados.BF.ToString("F2");
     }
 
     private GameObject[] CreateBar(int value, float ySize, float xPosition, float yPosition, float zeroPosition, double yValue)
