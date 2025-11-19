@@ -60,7 +60,6 @@ public class Events : MonoBehaviour
 
     public void SetResultsValue(int index)
     {
-        //Como cada carta va en un areglo, al ser cliqueada identificar a que posición del arreglo pertenece esa carta para asignarle ese valor a index
         NotificationsManager.Instance.QuestionNotifications("¿Es la carta que se ha destapado para este año en el tablero central del juego?");
         NotificationsManager.Instance.SetYesButton(() =>
         {
@@ -75,7 +74,7 @@ public class Events : MonoBehaviour
                     EconomicModel.Instance.inf += cambio;
                     break;
                 case OpcionesResultados.Gasto_Publico:
-                    EconomicModel.Instance.G += cambio;
+                    EconomicModel.G += cambio;
                     break;
                 case OpcionesResultados.Tasa_Impositiva:
                     EconomicModel.Instance.t += cambio;
@@ -85,11 +84,11 @@ public class Events : MonoBehaviour
 
             UI_System.Instance.SwitchScreens(datosScreen);
             NotificationsManager.Instance.WarningNotifications(
-                "Los nuevos valores son:\nPIB: "+EconomicModel.Instance.y.ToString("F2")+
-                "\nTasa inflación: "+EconomicModel.Instance.inf.ToString("F2")+
-                "\nBalance fiscal: "+EconomicModel.Instance.BF.ToString("F2")+
-                "\nGasto público: "+EconomicModel.Instance.G.ToString("F2")+
-                "\nTasa impositiva: "+EconomicModel.Instance.t.ToString("F2")
+                "Los nuevos valores son:\nVariación PIB real: " + EconomicModel.Instance.variacionPIB_real.ToString("F2") +
+                "\nTasa inflación: " + EconomicModel.Instance.inf.ToString("F2") +
+                "\nBalance fiscal: " + EconomicModel.Instance.saldo.ToString("F2") +
+                "\nGasto público: " + EconomicModel.G.ToString("F2") +
+                "\nTasa impositiva: " + EconomicModel.Instance.t.ToString("F2")
             );
         });
     }

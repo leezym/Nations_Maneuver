@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using MathNet.Numerics.RootFinding;
 using TMPro;
+using System.Data;
 
 public class EconomicModel : MonoBehaviour
 {
@@ -18,49 +18,33 @@ public class EconomicModel : MonoBehaviour
 
     InputValidations inputValidations;
 
-    // Parameters
-    [HideInInspector]
-    public double a = 160;
-    [HideInInspector]
-    public double f = 100;
-    [HideInInspector]
-    public double w = 50;
-    [HideInInspector]
-    public double ka = 30000;
-    [HideInInspector]
-    public double L = 225;
-    [HideInInspector]
-    public double A = 1;
-    [HideInInspector]
-    public double x1 = 0.2;
-    [HideInInspector]
-    public double x2 = 30;
-    [HideInInspector]
-    public double m1 = 0.06;
-    [HideInInspector]
-    public double m2 = 10;
-    [HideInInspector]
-    public double y_ex = 20000;
-    [HideInInspector]
-    public double r_ex = 0.05;
-    [HideInInspector]
-    public double c = 0.6;
-    [HideInInspector]
-    public double b = 1500;
-    [HideInInspector]
-    public double k = 0.2;
-    [HideInInspector]
-    public double h = 1000;
-    [HideInInspector]
-    public double alpha = 0.5;
-    [HideInInspector]
-    public double rho = 10;
-    [HideInInspector]
-    public double e_0 = 2;
+    [Header("Variables exógenas")]
+    [Header("Mercado de bienes")]
+    public static double C = 160; // Consumo autónomo //// == cambio en las expectativas de los consumidores.
+    public static double I = 100; // inversión autónoma ////== Cambio de expectativas sobre el recimiento económico
 
+    [Header("Oferta")]
+    public static double w = 50; // Salario nominal ////== Sindicatos consiguieron un incremento salaria.
+    public static double ka = 30000; // stock de capital ////== desatre natural disminuye el stock de capital
+    public static double L = 225; // trabajo //// == Pandemia mata el 25% se la población.
+    public static double A = 1; // tecnología //// == Una mejora en la tecnología, aumenta la productividad
+
+
+    [Header("Parámetros")]
+    [Header("Mercado de bienes")]
+    public static double c = 0.4; // PMgC este parámetro está entre cero y uno 0<c<1.
+    public static double b = 1500; // sensibilidad de la inversión a la tasa de interés.
+
+    [Header("Mercado dinero")]
+    public static double k = 0.40; // sensibilidad de la demanda de dinero a la renta
+    public static double h = 500; // sensibilidad de la demanda de dinero a cambios en la tasa de interés
+
+    [Header("Oferta")]
+    public static double alpha = 0.6; // proporción de la utilización del capital en la producción
+    
     // Parameters for DefineSimplifications
     [HideInInspector]
-    public double omega, gamma, q, u, pi_e, sigma;
+    public static double omega, gamma, q, u;
 
     [Header("UI TMP_Text")]
     public TMP_Text shiftText;
@@ -87,15 +71,22 @@ public class EconomicModel : MonoBehaviour
     public Button siguienteTurnoButton;
     public Button finalizarPartidaButton;
 
-    // Variables del juego
-    [HideInInspector]
-    public double G, t, M;
+    [Header("Variables de política. Variables de decisión del jugador (las que él maneja)")]
+    // Instrumentos de política fiscal
+    public static double G;
+    public double t;
+    // Instrumentos de política monetaria
+    public static double M;
+
+    const double EPS = 1e-6;
+
     [HideInInspector]
     public double y, r, p;
     [HideInInspector]
-    public double variacionPIB, inf, BF;
+    public double variacionPIB_real, inf, saldo;
     [HideInInspector]
-    public double[] initialGuess, finalGuess, solutionVector;
+    public static double[] initialGuess;
+    public double[] finalGuess, solutionVector;
     
     void Awake()
     {
@@ -115,7 +106,7 @@ public class EconomicModel : MonoBehaviour
         PlayerPrefs.SetInt("shift", shift);
 
         PlayerPrefs.SetString("G", textGasto.text); // gasto
-        PlayerPrefs.SetString("t", textTasaImp.text ); // tasa impositiva
+        PlayerPrefs.SetString("t", textTasaImp.text); // tasa impositiva
         PlayerPrefs.SetString("M", textOma.text); // bonos
 
         string formattedInitialGuess = "";
@@ -128,38 +119,62 @@ public class EconomicModel : MonoBehaviour
                 formattedInitialGuess += "-";
             }
         }
-                
-        PlayerPrefs.SetString("initialGuess", formattedInitialGuess);        
+
+        PlayerPrefs.SetString("initialGuess", formattedInitialGuess);
     }
 
     //en la ronda incial (turno 0), se asignan valores aleatorios en cada variable: G, t, M, initialGuess (y,r,p) -> (PIB, tasa interes, precio)
     //se ejecuta la solucion y esos resultados aleatorios me generan un nuevo resultado para comenzar el turno 1: PIB, tasa interes, p, tasa inflacion y balance fiscal
     //los rangos de los valores varian de donde empiece el jugador
-    // G = {50 - 500} ++50
-    // t = {0.05 - 0.25} ++0.02
-    // M = {4000 - 5500} ++150
+    // G = {50 - 1000} ++50
+    // t = {0 - 1} ++0.1
+    // M = {5 - 40} ++5
+
+    private (double G, double t, double M) GenerateRandomPolicy()
+    {
+        double Grand = inputValidations.limInfGasto + UnityEngine.Random.Range(1, 21) * inputValidations.stepGasto;
+        double trand = inputValidations.limInfTasaImp + (int)UnityEngine.Random.Range(1, 11) * inputValidations.stepTasaImp;
+        double Mrand = inputValidations.limInfOma   + UnityEngine.Random.Range(1, 9)  * inputValidations.stepOma;
+
+        return (Grand, trand, Mrand);
+    }
 
     public void NewGame()
     {
         shift = 1;
-        initialGuess = new double[] { 800, 0.05, 1.1 }; // valores iniciales (y,r,p)
 
         calcularButton.gameObject.SetActive(true);
         siguienteTurnoButton.gameObject.SetActive(true);
         finalizarPartidaButton.gameObject.SetActive(false);
 
         // Aleatorio por primera vez
-        G = UnityEngine.Random.Range(1, 11) * 50; // gasto
-        t = inputValidations.limInfTasaImp + UnityEngine.Random.Range(0, 11) * inputValidations.stepTasaImp; // tasa impositiva
-        M = inputValidations.limInfOma + UnityEngine.Random.Range(0, 10) * inputValidations.stepOma; // bonos
-
-        Debug.Log("ALEATORIO\nG: "+G+"t: "+t+"M: "+M);
-
+        (G, t, M) = GenerateRandomPolicy();
+        /*G = 400;
+        t = 0.5;
+        M = 40;*/
         DefineSimplifications(G, t, M);
-        finalGuess = SolveEquations(initialGuess);
-        initialGuess = finalGuess;
-        Debug.Log("INITIAL: "+initialGuess[0]+","+initialGuess[1]+","+initialGuess[2]);
+        initialGuess = new double[] { 510, 0.3, 2.5 };
+        finalGuess = SolveEquations();
+        CalculateReport();
 
+        // Aleatorio por segunda vez
+        (G, t, M) = GenerateRandomPolicy();
+        /*G = 400;
+        t = 0.5;
+        M = 35;*/
+        DefineSimplifications(G, t, M);
+        finalGuess = SolveEquations();
+        CalculateReport();
+
+        GenerateReport();
+
+        NotificationsManager.Instance.WarningNotifications(
+            "Los nuevos valores son:\nVariación PIB real: " + variacionPIB_real.ToString("F2") +
+            "\nTasa inflación: " + inf.ToString("F2") +
+            "\nBalance fiscal: " + saldo.ToString("F2") +
+            "\nGasto público: " + G.ToString("F2") +
+            "\nTasa impositiva: " + t.ToString("F2")
+        );
     }
 
     public void ContinueGame()
@@ -213,7 +228,7 @@ public class EconomicModel : MonoBehaviour
 
     public void Calculate()
     {
-        if(textGasto.text != "" && textTasaImp.text != "" && textOma.text != "" && (toggleCompra.isOn || toggleVenta.isOn))
+        if(!string.IsNullOrEmpty(textGasto.text) && !string.IsNullOrEmpty(textTasaImp.text) && !string.IsNullOrEmpty(textOma.text) && (toggleCompra.isOn || toggleVenta.isOn))
         {
             NotificationsManager.Instance.QuestionNotifications("¿Quieres calcular?");
             NotificationsManager.Instance.SetYesButton(()=> {
@@ -228,15 +243,11 @@ public class EconomicModel : MonoBehaviour
                 t = Convert.ToDouble(textTasaImp.text); // tasa impositiva
                 M = (toggleCompra.isOn ? M + Convert.ToDouble(textOma.text) : M - Convert.ToDouble(textOma.text)); // bonos
 
-                Debug.Log("G: "+G+"t: "+t+"M: "+M);
-
-
                 DefineSimplifications(G, t, M);
-                finalGuess = SolveEquations(initialGuess);
+                finalGuess = SolveEquations();
+                CalculateReport();
                 GenerateReport();
 
-                Debug.Log("INITIAL: "+finalGuess[0]+","+finalGuess[1]+","+finalGuess[2]);
-                
                 UI_System.Instance.SwitchScreens(resultadosScreen);
                 shift+=1;
             });
@@ -248,64 +259,88 @@ public class EconomicModel : MonoBehaviour
 
     public void DefineSimplifications(double G, double t, double M)
     {
-        omega = a + f + G + x1 * y_ex;
-        gamma = 1 - c * (1 - t) + m1;
+        gamma = (1 - c * (1 - t));
+
         q = 1 / alpha;
         u = (1 - alpha) / alpha;
-        pi_e = 0;
-        sigma = x2 - m2;
     }
 
-    public double[] SolveEquations(double[] initialGuess)
-    {        
-        Func<double[], double[]> equations = vars =>
-        {
-            y = vars[0];
-            r = vars[1];
-            p = vars[2];
+    static void Doxn(double[] vars, double[] f)
+    {
+        double y = vars[0];
+        double r = vars[1];
+        double p = vars[2];
 
-            double da = gamma * y + sigma * rho * r - omega - sigma * e_0 - sigma * rho * r_ex;
-            double m = k * y - h * r - M / p - h * pi_e;
-            double oa = y - ((Math.Pow(A, q)) * ka * (Math.Pow(1 - alpha, u)) * (Math.Pow(p/w, u)));
+        // MISMO clipping que en Python
+        p = (p < EPS) ? EPS : p;
+        r = (r < EPS) ? EPS : r;
 
-            return new double[] { da, m, oa };
-        };
+        double da = gamma * y - C - I - G + b * r;
+        double m  = M / p - k * y + h * r;
+        double oa = y - (Math.Pow(A, q) * ka * Math.Pow(1 - alpha, u) * Math.Pow(p / w, u));
 
-        double accuracy = 1e-8; // Desired accuracy
-        int maxIterations = 100; // Maximum number of iterations
-        double jacobianStepSize = 1e-4; // Step size for numerical Jacobian approximation
+        f[0] = da;
+        f[1] = m;
+        f[2] = oa;
+    }
 
-        solutionVector = Broyden.FindRoot(equations, initialGuess, accuracy, maxIterations, jacobianStepSize); // fsolve de python
+    public static double[] SolveEquations()
+    {
+        double[] x = (double[])initialGuess.Clone();
+        int it;
 
-        return solutionVector;
+        bool ok = MinpackLikeSolver.Solve(
+            Doxn,
+            x,
+            maxIterations: 200,
+            tol: 1e-12,
+            lambda0: 1e-3,
+            stepRel: 1e-7,
+            out it
+        );
+
+        if (!ok)
+            Debug.LogWarning("No convergió");
+
+        return x;
     }
 
     public void CalculateReport()
     {
-        // finalGuess = {y, r, p}
-        y = finalGuess[0]; // PIB
-        r = finalGuess[1]; // tasa interes
+        double yInicial = initialGuess[0];
+        double yFinal = finalGuess[0];
 
-        double yFinal = finalGuess[0]; // PIB final
-        double pFinal = finalGuess[2]; // precio final
+        double pInicial = initialGuess[2];
+        double pFinal = finalGuess[2];
+        
+        double PIB_realInicial = yInicial / pInicial;
+        double PIB_realFinal = yFinal / pFinal;
+        variacionPIB_real = ((PIB_realFinal - PIB_realInicial) / PIB_realInicial) * 100; // tasa de crecimiento del PIB_real ( )= [(PIB_real_1 - PIB_real_0)/ PIB_real_0 ]*100
 
-        double yInicial = initialGuess[0]; // PIB inicial
-        double pInicial = initialGuess[2];  // precio inicial
+        // ingreso del gobierno Nominal
+        double ingreso = t * yFinal;
+        saldo = ingreso - G; // balance fiscal
 
-        variacionPIB = ((yFinal - yInicial) / yInicial) * 100; // variacion PIB
-        inf = ((pFinal - pInicial) / pInicial) * 100; // inflacion ?????????
-        BF = (t * y) - G; // balance fiscal ???????????
+        inf = ((pFinal - pInicial) / pInicial) * 100; // Inflación (\pi) = [(p_1 -p_0)/p_0 ]* 100
+        
+        initialGuess = finalGuess;
+
+        Debug.Log("G: "+G);
+        Debug.Log("t: "+t);
+        Debug.Log("M: "+M);
+
+        Debug.Log("PIB: "+yFinal);
+        Debug.Log("PIB real: "+yFinal/pFinal);
+        Debug.Log("Precios: "+pFinal);
+        Debug.Log("Inflación: "+inf);
     }
 
     public void GenerateReport() 
     {
-        CalculateReport();
-
-        textPIB.text = variacionPIB.ToString("F2"); // ya no es PIB sino su variacion
+        textPIB.text = variacionPIB_real.ToString("F2"); // variacion PIB real
         textInflacion.text = inf.ToString("F2"); // tasa inflacion
-        textBalance.text = BF.ToString("F2"); // balance fiscal
+        textBalance.text = saldo.ToString("F2"); // balance fiscal
 
-        initialGuess = finalGuess;
-        WindowGraph.Instance.shiftsList.Add(new Turnos(new Datos(G, t, M), new Resultados(variacionPIB, inf, BF)));
+        WindowGraph.Instance.shiftsList.Add(new Turnos(new Datos(G, t, M), new Resultados(variacionPIB_real, inf, saldo)));
     }
 }

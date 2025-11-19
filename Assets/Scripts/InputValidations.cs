@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,19 +12,19 @@ public class InputValidations : MonoBehaviour
     TMP_InputField textOma => EconomicModel.Instance.textOma;
 
     [Header("GASTO")]
-    public int limInfGasto = 50;
-    public int limSupGasto = 500;
-    public int stepGasto = 50; 
+    public double limInfGasto = 50;
+    public double limSupGasto = 1000;
+    public double stepGasto = 50; 
 
     [Header("TASA IMPOSITIVA")]
-    public float limInfTasaImp = 0.05f;
-    public float limSupTasaImp = 0.25f;
-    public float stepTasaImp = 0.02f;
+    public int limInfTasaImp = 0;
+    public int limSupTasaImp = 1;
+    public double stepTasaImp = 0.1;
 
     [Header("BONOS")]
-    public int limInfOma = 4000;
-    public int limSupOma = 5500;
-    public int stepOma = 150;
+    public double limInfOma = 5;
+    public double limSupOma = 40;
+    public double stepOma = 5;
 
     private void Awake()
     {
@@ -35,12 +36,12 @@ public class InputValidations : MonoBehaviour
 
     public void OnInputValueChanged_Gasto()
     {
-        int inputValue;
+        double inputValue;
 
-        if (int.TryParse(textGasto.text, out inputValue))
+        if (double.TryParse(textGasto.text, out inputValue))
         {
-            inputValue = Mathf.Clamp(inputValue, limInfGasto, limSupGasto);
-            inputValue = Mathf.RoundToInt((inputValue - limInfGasto) / stepGasto) * stepGasto + limInfGasto;
+            inputValue = Math.Clamp(inputValue, limInfGasto, limSupGasto);
+            inputValue = Math.Round((inputValue - limInfGasto) / stepGasto) * stepGasto + limInfGasto;
 
             textGasto.text = inputValue.ToString();
         }
@@ -52,13 +53,13 @@ public class InputValidations : MonoBehaviour
 
     public void OnInputValueChanged_TasaImp()
     {
-        float inputValue;
+        double inputValue;
 
-        if (float.TryParse(textTasaImp.text, out inputValue))
+        if (double.TryParse(textTasaImp.text, out inputValue))
         {
-            inputValue = Mathf.Clamp(inputValue, limInfTasaImp, limSupTasaImp);
+            inputValue = Math.Clamp(inputValue, limInfTasaImp, limSupTasaImp);
 
-            inputValue = Mathf.Round((inputValue - limInfTasaImp) / stepTasaImp) * stepTasaImp + limInfTasaImp;
+            inputValue = Math.Round((inputValue - limInfTasaImp) / stepTasaImp) * stepTasaImp + limInfTasaImp;
 
             textTasaImp.text = inputValue.ToString("F2");
         }
@@ -70,13 +71,13 @@ public class InputValidations : MonoBehaviour
 
     public void OnInputValueChanged_Oma()
     {
-        int inputValue;
+        double inputValue;
 
-        if (int.TryParse(textOma.text, out inputValue))
+        if (double.TryParse(textOma.text, out inputValue))
         {
-            inputValue = Mathf.Clamp(inputValue, limInfOma, limSupOma);
+            inputValue = Math.Clamp(inputValue, limInfOma, limSupOma);
 
-            inputValue = Mathf.RoundToInt((inputValue - limInfOma) / stepOma) * stepOma + limInfOma;
+            inputValue = Math.Round((inputValue - limInfOma) / stepOma) * stepOma + limInfOma;
 
             textOma.text = inputValue.ToString();
         }

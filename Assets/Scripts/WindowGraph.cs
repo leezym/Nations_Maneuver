@@ -42,13 +42,13 @@ public class Resultados
 {
     public double y;
     public double inf;
-    public double BF;
+    public double saldo;
 
-    public Resultados(double y, double inf, double BF)
+    public Resultados(double y, double inf, double saldo)
     {        
         this.y = y;
         this.inf = inf;
-        this.BF = BF;
+        this.saldo = saldo;
     }
 }
 
@@ -66,7 +66,7 @@ public class WindowGraph : MonoBehaviour
     [Header("UI Data")] 
     public TMP_Text currentPIB;
     public TMP_Text currentTInf;
-    public TMP_Text currentBF;
+    public TMP_Text currentSaldo;
 
     [Header("UI Graph")]    
     public Button defaultButton;
@@ -135,8 +135,8 @@ public class WindowGraph : MonoBehaviour
                
         if(shiftsList.Count > 0)
         {
-            yMaximum = (float)shiftsList.Max(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.BF)); //valor maximo de los turnos actuales
-            yMininum = (float)shiftsList.Min(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.BF)); //valor minimo de los turnos actuales
+            yMaximum = (float)shiftsList.Max(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.saldo)); //valor maximo de los turnos actuales
+            yMininum = (float)shiftsList.Min(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.saldo)); //valor minimo de los turnos actuales
 
             yMaximum = (yMaximum > 0 ? yMaximum : 0);
             yMininum = (yMininum < 0 ? yMininum : 0);
@@ -148,7 +148,7 @@ public class WindowGraph : MonoBehaviour
         for (int i = 0; i < shiftsList.Count; i++) {
             Resultados resultado = shiftsList[i].resultados;
 
-            double yValue = (value == 0 ? resultado.y : value == 1 ? resultado.inf : resultado.BF);
+            double yValue = (value == 0 ? resultado.y : value == 1 ? resultado.inf : resultado.saldo);
 
             float xPosition = (i + 1) * (graphWidth / GameLoadManager.SHIFTS);
             float yPosition = (((float)yValue - yMininum) / (yMaximum - yMininum)) * graphHeight;
@@ -170,7 +170,7 @@ public class WindowGraph : MonoBehaviour
         zeroLine.transform.SetAsLastSibling();
         currentPIB.text = shiftsList[shiftsList.Count - 1].resultados.y.ToString("F2");
         currentTInf.text = shiftsList[shiftsList.Count - 1].resultados.inf.ToString("F2");
-        currentBF.text = shiftsList[shiftsList.Count - 1].resultados.BF.ToString("F2");
+        currentSaldo.text = shiftsList[shiftsList.Count - 1].resultados.saldo.ToString("F2");
     }
 
     private GameObject[] CreateBar(int value, float ySize, float xPosition, float yPosition, float zeroPosition, double yValue)
