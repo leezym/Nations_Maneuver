@@ -68,7 +68,7 @@ public class Events : MonoBehaviour
             switch (cards[index].opcionesResultados)
             {
                 case OpcionesResultados.PIB:
-                    EconomicModel.Instance.y += cambio;
+                    EconomicModel.Instance.y += EconomicModel.Instance.y * cambio;
                     break;
                 case OpcionesResultados.Tasa_Inflacion:
                     EconomicModel.Instance.inf += cambio;
@@ -84,11 +84,12 @@ public class Events : MonoBehaviour
 
             UI_System.Instance.SwitchScreens(datosScreen);
             NotificationsManager.Instance.WarningNotifications(
-                "Los nuevos valores son:\nVariación PIB real: " + EconomicModel.Instance.variacionPIB_real.ToString("F2") +
-                "\nTasa inflación: " + EconomicModel.Instance.inf.ToString("F2") +
+                "Los nuevos valores son:\n\nVariación PIB real: " + EconomicModel.Instance.variacionPIB_real.ToString("F2") +
+                "\nTasa inflación: " + EconomicModel.Instance.inf.ToString("F2") + "%" +
                 "\nBalance fiscal: " + EconomicModel.Instance.saldo.ToString("F2") +
-                "\nGasto público: " + EconomicModel.G.ToString("F2") +
-                "\nTasa impositiva: " + EconomicModel.Instance.t.ToString("F2")
+                "\nGasto público: " + EconomicModel.G.ToString() +
+                "\nTasa impositiva: " + EconomicModel.Instance.t.ToString("F2") + 
+                "\nOferta monetaria: " + EconomicModel.M.ToString()
             );
         });
     }

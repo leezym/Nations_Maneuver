@@ -40,7 +40,7 @@ public class EconomicModel : MonoBehaviour
     public static double h = 500; // sensibilidad de la demanda de dinero a cambios en la tasa de interés
 
     [Header("Oferta")]
-    public static double alpha = 0.6; // proporción de la utilización del capital en la producción
+    public static double alpha = 0.2; // proporción de la utilización del capital en la producción
     
     // Parameters for DefineSimplifications
     [HideInInspector]
@@ -132,9 +132,9 @@ public class EconomicModel : MonoBehaviour
 
     private (double G, double t, double M) GenerateRandomPolicy()
     {
-        double Grand = inputValidations.limInfGasto + UnityEngine.Random.Range(1, 21) * inputValidations.stepGasto;
-        double trand = inputValidations.limInfTasaImp + (int)UnityEngine.Random.Range(1, 11) * inputValidations.stepTasaImp;
-        double Mrand = inputValidations.limInfOma   + UnityEngine.Random.Range(1, 9)  * inputValidations.stepOma;
+        double Grand = inputValidations.limInfGasto + UnityEngine.Random.Range(0, 4) * inputValidations.stepGasto;
+        double trand = inputValidations.limInfTasaImp + (int)UnityEngine.Random.Range(1, 5) * inputValidations.stepTasaImp;
+        double Mrand = inputValidations.limInfOma   + UnityEngine.Random.Range(0, 3)  * inputValidations.stepOma;
 
         return (Grand, trand, Mrand);
     }
@@ -149,9 +149,6 @@ public class EconomicModel : MonoBehaviour
 
         // Aleatorio por primera vez
         (G, t, M) = GenerateRandomPolicy();
-        /*G = 400;
-        t = 0.5;
-        M = 40;*/
         DefineSimplifications(G, t, M);
         initialGuess = new double[] { 510, 0.3, 2.5 };
         finalGuess = SolveEquations();
@@ -159,9 +156,6 @@ public class EconomicModel : MonoBehaviour
 
         // Aleatorio por segunda vez
         (G, t, M) = GenerateRandomPolicy();
-        /*G = 400;
-        t = 0.5;
-        M = 35;*/
         DefineSimplifications(G, t, M);
         finalGuess = SolveEquations();
         CalculateReport();
@@ -169,11 +163,12 @@ public class EconomicModel : MonoBehaviour
         GenerateReport();
 
         NotificationsManager.Instance.WarningNotifications(
-            "Los nuevos valores son:\nVariación PIB real: " + variacionPIB_real.ToString("F2") +
-            "\nTasa inflación: " + inf.ToString("F2") +
+            "Los nuevos valores son:\n\nVariación PIB real: " + variacionPIB_real.ToString("F2") +
+            "\nTasa inflación: " + inf.ToString("F2") + "%" +
             "\nBalance fiscal: " + saldo.ToString("F2") +
-            "\nGasto público: " + G.ToString("F2") +
-            "\nTasa impositiva: " + t.ToString("F2")
+            "\nGasto público: " + G.ToString() +
+            "\nTasa impositiva: " + t.ToString("F2") + 
+            "\nOferta monetaria: " + M.ToString()
         );
     }
 
@@ -271,7 +266,6 @@ public class EconomicModel : MonoBehaviour
         double r = vars[1];
         double p = vars[2];
 
-        // MISMO clipping que en Python
         p = (p < EPS) ? EPS : p;
         r = (r < EPS) ? EPS : r;
 
@@ -332,13 +326,13 @@ public class EconomicModel : MonoBehaviour
         Debug.Log("PIB: "+yFinal);
         Debug.Log("PIB real: "+yFinal/pFinal);
         Debug.Log("Precios: "+pFinal);
-        Debug.Log("Inflación: "+inf);
+        Debug.Log("Inflación (%): "+inf);
     }
 
     public void GenerateReport() 
     {
         textPIB.text = variacionPIB_real.ToString("F2"); // variacion PIB real
-        textInflacion.text = inf.ToString("F2"); // tasa inflacion
+        textInflacion.text = inf.ToString("F2") + "%"; // tasa inflacion
         textBalance.text = saldo.ToString("F2"); // balance fiscal
 
         WindowGraph.Instance.shiftsList.Add(new Turnos(new Datos(G, t, M), new Resultados(variacionPIB_real, inf, saldo)));

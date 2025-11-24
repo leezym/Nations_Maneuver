@@ -1282,7 +1282,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -855298285791758126, guid: 8df4daee83787814195e2f98b2ed33d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 94bc6f33064b428469cf0850eb0f88ac, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1793,7 +1793,7 @@ MonoBehaviour:
   m_CharacterValidation: 3
   m_RegexValue: 
   m_GlobalPointSize: 14
-  m_CharacterLimit: 4
+  m_CharacterLimit: 3
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
@@ -2413,7 +2413,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -855298285791758126, guid: 8df4daee83787814195e2f98b2ed33d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 56e00603e1daf844cb72231143e5c122, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -3488,7 +3488,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6937817954938267909, guid: eed185109442b53489499611569761dc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fa3c82dc8c65ac94188e4d47e6754129, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4968,7 +4968,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6470460504253458178, guid: 6ab8ffb46ff528d4e8cd5d2aa5f84b47, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b42bb7ec920167e4e883beeaef39609e, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -5591,7 +5591,7 @@ MonoBehaviour:
   - carta: {fileID: 70106606}
     opcionesResultados: 0
     opcionesCambios: 1
-    valor: 0.5
+    valor: 0.05
   - carta: {fileID: 1080833120}
     opcionesResultados: 1
     opcionesCambios: 1
@@ -5601,65 +5601,65 @@ MonoBehaviour:
     opcionesCambios: 0
     valor: 3
   - carta: {fileID: 351903021}
-    opcionesResultados: 3
+    opcionesResultados: 2
     opcionesCambios: 1
     valor: 100
   - carta: {fileID: 134310006}
     opcionesResultados: 0
     opcionesCambios: 0
-    valor: 1
+    valor: 0.01
   - carta: {fileID: 451545970}
     opcionesResultados: 0
     opcionesCambios: 1
-    valor: 0.75
+    valor: 0.075
   - carta: {fileID: 963978794}
     opcionesResultados: 0
     opcionesCambios: 0
-    valor: 0.75
+    valor: 0.075
   - carta: {fileID: 707188827}
-    opcionesResultados: 3
+    opcionesResultados: 2
     opcionesCambios: 1
     valor: 150
   - carta: {fileID: 716638672}
     opcionesResultados: 0
     opcionesCambios: 1
-    valor: 0.5
+    valor: 0.05
   - carta: {fileID: 1536104032}
     opcionesResultados: 0
     opcionesCambios: 0
-    valor: 0.25
+    valor: 0.025
   - carta: {fileID: 1964821390}
     opcionesResultados: 1
     opcionesCambios: 1
     valor: 2
   - carta: {fileID: 1287230728}
-    opcionesResultados: 3
+    opcionesResultados: 2
     opcionesCambios: 1
     valor: 200
   - carta: {fileID: 1478831500}
-    opcionesResultados: 4
+    opcionesResultados: 3
     opcionesCambios: 1
-    valor: 0.2
+    valor: 0.02
   - carta: {fileID: 1233970739}
-    opcionesResultados: 0
-    opcionesCambios: 0
-    valor: 0.25
-  - carta: {fileID: 231119706}
-    opcionesResultados: 0
-    opcionesCambios: 0
-    valor: 1
-  - carta: {fileID: 999678907}
     opcionesResultados: 1
     opcionesCambios: 1
     valor: 4
-  - carta: {fileID: 1869601524}
-    opcionesResultados: 4
+  - carta: {fileID: 231119706}
+    opcionesResultados: 3
     opcionesCambios: 0
-    valor: 0.2
-  - carta: {fileID: 1063221811}
+    valor: 0.02
+  - carta: {fileID: 999678907}
     opcionesResultados: 1
     opcionesCambios: 1
     valor: 3
+  - carta: {fileID: 1869601524}
+    opcionesResultados: 0
+    opcionesCambios: 0
+    valor: 0.025
+  - carta: {fileID: 1063221811}
+    opcionesResultados: 0
+    opcionesCambios: 0
+    valor: 0.01
 --- !u!4 &390101586
 Transform:
   m_ObjectHideFlags: 0
@@ -6564,7 +6564,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "Los valores de gasto p\xFAblico est\xE1n entre 50 y
-            500, con incrementos de 50."
+            1000, con incrementos de 50."
           m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &441598919
@@ -7028,7 +7028,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6937817954938267909, guid: eed185109442b53489499611569761dc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 176e1aacd347a7643b4bb0d1ed471a45, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -9680,7 +9680,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -855298285791758126, guid: 8df4daee83787814195e2f98b2ed33d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7d2c7d02b595b584693977576e325054, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -9938,7 +9938,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6937817954938267909, guid: eed185109442b53489499611569761dc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 71ed50341d6ffca46b6650fe2bfdbbc8, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -11838,7 +11838,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.00048828125, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &817764033
@@ -14488,7 +14488,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6470460504253458178, guid: 6ab8ffb46ff528d4e8cd5d2aa5f84b47, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 654685a5ad72d2a408a55a07a60c1ec7, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -14608,7 +14608,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6470460504253458178, guid: 6ab8ffb46ff528d4e8cd5d2aa5f84b47, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 489f182d49cc0cc48a32af158ed81dcf, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -16003,7 +16003,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6937817954938267909, guid: eed185109442b53489499611569761dc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 57e01d939dbfeff4986a15ac99bbbb9f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -16519,7 +16519,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -855298285791758126, guid: 8df4daee83787814195e2f98b2ed33d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bce51632ca963ee45b4caf952b86bbc9, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -18233,8 +18233,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1229266300}
   m_HandleRect: {fileID: 1977533684}
   m_Direction: 0
-  m_Value: 0.5
-  m_Size: 0.07497656
+  m_Value: 0.50000006
+  m_Size: 0.07497657
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18533,7 +18533,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -855298285791758126, guid: 8df4daee83787814195e2f98b2ed33d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a70b85a590f239d409b5ccbd9ebabf6f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -19223,7 +19223,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6937817954938267909, guid: eed185109442b53489499611569761dc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cbd423fdc57b4f7419d8dc64d3c7e7ac, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -21407,8 +21407,8 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: "Los valores de oferta monetaria est\xE1n entre 4000
-            y 5500, con incrementos de 150."
+          m_StringArgument: "Los valores de oferta monetaria est\xE1n entre 5 y 40,
+            con incrementos de 5."
           m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1392659732
@@ -21551,7 +21551,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6937817954938267909, guid: eed185109442b53489499611569761dc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0ba2b9249f303f84384595eaa42eeefa, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -21932,8 +21932,8 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: "Los valores de tasa impositiva est\xE1n entre 0.05 y
-            0.25, con incrementos de 0.02."
+          m_StringArgument: "Los valores de tasa impositiva est\xE1n entre 0 y 0.1,
+            con incrementos de 0.1."
           m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1418603498
@@ -22052,7 +22052,7 @@ MonoBehaviour:
   m_CharacterValidation: 2
   m_RegexValue: 
   m_GlobalPointSize: 14
-  m_CharacterLimit: 3
+  m_CharacterLimit: 4
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
@@ -22883,7 +22883,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6470460504253458178, guid: 6ab8ffb46ff528d4e8cd5d2aa5f84b47, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 40fe3969c57f99a49b56afd780f1abf5, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -24285,7 +24285,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6470460504253458178, guid: 6ab8ffb46ff528d4e8cd5d2aa5f84b47, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c13ebb5c15dfdc3448d6427129aa0016, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -29027,7 +29027,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -855298285791758126, guid: 8df4daee83787814195e2f98b2ed33d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 30277758d39d1204e8f0f5cb1394736b, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -30088,7 +30088,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -855298285791758126, guid: 8df4daee83787814195e2f98b2ed33d4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4362412c14346014287a0eef018641cb, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -32643,7 +32643,7 @@ MonoBehaviour:
   m_CharacterValidation: 2
   m_RegexValue: 
   m_GlobalPointSize: 14
-  m_CharacterLimit: 4
+  m_CharacterLimit: 2
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
@@ -33508,7 +33508,7 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 60
+  m_fontSizeMax: 70
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
