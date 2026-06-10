@@ -12,78 +12,78 @@ public class InputValidations : MonoBehaviour
     TMP_InputField textOma => EconomicModel.Instance.textOma;
 
     [Header("GASTO")]
-    public double limInfGasto = 50;
-    public double limSupGasto = 1000;
-    public double stepGasto = 50; 
+    public double limInfGasto;
+    public double limSupGasto;
+    public double stepGasto; 
 
     [Header("TASA IMPOSITIVA")]
-    public int limInfTasaImp = 0;
-    public int limSupTasaImp = 1;
-    public double stepTasaImp = 0.1;
+    public double limInfTasaImp;
+    public double limSupTasaImp;
+    public double stepTasaImp;
 
     [Header("BONOS")]
-    public double limInfOma = 5;
-    public double limSupOma = 40;
-    public double stepOma = 5;
+    public double limInfOma;
+    public double limSupOma;
+    public double stepOma;
 
     private void Awake()
     {
         if(Instance != null && Instance != this)
             Destroy(this);
         else
-            Instance = this;    
+            Instance = this;
     }
 
-    public void OnInputValueChanged_Gasto()
+    private void Start()
     {
-        double inputValue;
+        textGasto.onEndEdit.AddListener(_ => ValidateGasto());
+        textTasaImp.onEndEdit.AddListener(_ => ValidateTasaImp());
+        textOma.onEndEdit.AddListener(_ => ValidateOma());
+    }
 
-        if (double.TryParse(textGasto.text, out inputValue))
+    public void OnInputValueChanged_Gasto() { }
+    public void OnInputValueChanged_TasaImp() { }
+    public void OnInputValueChanged_Oma() { }
+
+    private void ValidateGasto()
+    {
+        if (double.TryParse(textGasto.text, out double inputValue))
         {
             inputValue = Math.Clamp(inputValue, limInfGasto, limSupGasto);
             inputValue = Math.Round((inputValue - limInfGasto) / stepGasto) * stepGasto + limInfGasto;
-
             textGasto.text = inputValue.ToString();
         }
         else
         {
-            Debug.LogWarning("Input no válido");
+            textGasto.text = limInfGasto.ToString();
         }
     }
 
-    public void OnInputValueChanged_TasaImp()
+    private void ValidateTasaImp()
     {
-        double inputValue;
-
-        if (double.TryParse(textTasaImp.text, out inputValue))
+        if (double.TryParse(textTasaImp.text, out double inputValue))
         {
             inputValue = Math.Clamp(inputValue, limInfTasaImp, limSupTasaImp);
-
-            inputValue = Math.Round((inputValue - limInfTasaImp) / stepTasaImp) * stepTasaImp + limInfTasaImp;
-
+            inputValue = Math.Round(inputValue, 2);
             textTasaImp.text = inputValue.ToString("F2");
         }
         else
         {
-            Debug.LogWarning("Input no válido");
+            textTasaImp.text = limInfTasaImp.ToString("F2");
         }
     }
 
-    public void OnInputValueChanged_Oma()
+    private void ValidateOma()
     {
-        double inputValue;
-
-        if (double.TryParse(textOma.text, out inputValue))
+        if (double.TryParse(textOma.text, out double inputValue))
         {
             inputValue = Math.Clamp(inputValue, limInfOma, limSupOma);
-
             inputValue = Math.Round((inputValue - limInfOma) / stepOma) * stepOma + limInfOma;
-
             textOma.text = inputValue.ToString();
         }
         else
         {
-            Debug.LogWarning("Input no válido");
+            textOma.text = limInfOma.ToString();
         }
     }
 }

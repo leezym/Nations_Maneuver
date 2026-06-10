@@ -1,0 +1,2 @@
+D:\Documentos del Sistema\Desktop\Nations_Maneuver\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+D:\Documentos del Sistema\Desktop\Nations_Maneuver\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\FramePacing\CMakeLists.txt

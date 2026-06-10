@@ -68,7 +68,7 @@ public class Events : MonoBehaviour
             switch (cards[index].opcionesResultados)
             {
                 case OpcionesResultados.PIB:
-                    EconomicModel.Instance.y += EconomicModel.Instance.y * cambio;
+                    EconomicModel.Instance.initialGuess[0] += EconomicModel.Instance.initialGuess[0] * cambio; //yFinal
                     break;
                 case OpcionesResultados.Tasa_Inflacion:
                     EconomicModel.Instance.inf += cambio;

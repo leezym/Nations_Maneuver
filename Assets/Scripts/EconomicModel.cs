@@ -40,7 +40,7 @@ public class EconomicModel : MonoBehaviour
     public static double h = 500; // sensibilidad de la demanda de dinero a cambios en la tasa de interés
 
     [Header("Oferta")]
-    public static double alpha = 0.2; // proporción de la utilización del capital en la producción
+    public static double alpha = 0.6; // proporción de la utilización del capital en la producción
     
     // Parameters for DefineSimplifications
     [HideInInspector]
@@ -80,8 +80,6 @@ public class EconomicModel : MonoBehaviour
 
     const double EPS = 1e-6;
 
-    [HideInInspector]
-    public double y, r, p;
     [HideInInspector]
     public double variacionPIB_real, inf, saldo;
     [HideInInspector]
@@ -126,15 +124,29 @@ public class EconomicModel : MonoBehaviour
     //en la ronda incial (turno 0), se asignan valores aleatorios en cada variable: G, t, M, initialGuess (y,r,p) -> (PIB, tasa interes, precio)
     //se ejecuta la solucion y esos resultados aleatorios me generan un nuevo resultado para comenzar el turno 1: PIB, tasa interes, p, tasa inflacion y balance fiscal
     //los rangos de los valores varian de donde empiece el jugador
-    // G = {50 - 1000} ++50
-    // t = {0 - 1} ++0.1
-    // M = {5 - 40} ++5
+    // G = {50 - 500} ++50
+    // t = {0 - 0.3} ++0.01
+    // M = {0 - 40} ++5
 
     private (double G, double t, double M) GenerateRandomPolicy()
     {
-        double Grand = inputValidations.limInfGasto + UnityEngine.Random.Range(0, 4) * inputValidations.stepGasto;
-        double trand = inputValidations.limInfTasaImp + (int)UnityEngine.Random.Range(1, 5) * inputValidations.stepTasaImp;
-        double Mrand = inputValidations.limInfOma   + UnityEngine.Random.Range(0, 3)  * inputValidations.stepOma;
+        // el rango del Random es hasta 3 para que varíe pequeño, y de 1 a 5 para que no tome el 0 de Oferta monetaria
+        int stepsG = Mathf.RoundToInt((float)((inputValidations.limSupGasto - inputValidations.limInfGasto) / inputValidations.stepGasto));
+        double Grand = Math.Clamp(
+            inputValidations.limInfGasto + UnityEngine.Random.Range(0, 2) * inputValidations.stepGasto,
+            inputValidations.limInfGasto, inputValidations.limSupGasto);
+
+        int stepsT = Mathf.RoundToInt((float)((inputValidations.limSupTasaImp - inputValidations.limInfTasaImp) / inputValidations.stepTasaImp));
+        double trand = Math.Clamp(
+            inputValidations.limInfTasaImp + UnityEngine.Random.Range(5, 11) * inputValidations.stepTasaImp,
+            inputValidations.limInfTasaImp, inputValidations.limSupTasaImp);
+
+        int stepsM = Mathf.RoundToInt((float)((inputValidations.limSupOma - inputValidations.limInfOma) / inputValidations.stepOma));
+        double Mrand = Math.Clamp(
+            inputValidations.limInfOma + UnityEngine.Random.Range(2, 3) * inputValidations.stepOma,
+            inputValidations.limInfOma, inputValidations.limSupOma);
+
+        // pdte en la parte aleatoria tenemos variacion pib real muy alta
 
         return (Grand, trand, Mrand);
     }
@@ -316,7 +328,8 @@ public class EconomicModel : MonoBehaviour
         saldo = ingreso - G; // balance fiscal
 
         inf = ((pFinal - pInicial) / pInicial) * 100; // Inflación (\pi) = [(p_1 -p_0)/p_0 ]* 100
-        
+        inf = inf < 1 ? 1 : inf; // Si la inflación es menor a 1%, se considera como 1%
+
         initialGuess = finalGuess;
 
         Debug.Log("G: "+G);
