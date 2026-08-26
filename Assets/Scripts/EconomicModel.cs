@@ -83,8 +83,7 @@ public class EconomicModel : MonoBehaviour
     [HideInInspector]
     public double variacionPIB_real, inf, saldo;
     [HideInInspector]
-    public static double[] initialGuess;
-    public double[] finalGuess, solutionVector;
+    public double[] initialGuess, finalGuess, solutionVector;
     
     void Awake()
     {
@@ -290,7 +289,7 @@ public class EconomicModel : MonoBehaviour
         f[2] = oa;
     }
 
-    public static double[] SolveEquations()
+    public double[] SolveEquations()
     {
         double[] x = (double[])initialGuess.Clone();
         int it;
