@@ -4,11 +4,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class UI_System : MonoBehaviour
+public class UI_System : Singleton<UI_System>
 {
     #region Variables
-    public static UI_System Instance{get; private set;}
-
     [Header("MAIN PROPERTIES")]
     public UI_Screen m_StartScreen;
 
@@ -26,13 +24,6 @@ public class UI_System : MonoBehaviour
     #endregion
 
     #region Main Method
-    private void Awake()
-    {
-        if(Instance != null && Instance != this)
-            Destroy(this);
-        else
-            Instance = this;
-    }
     void Start()
     {
         screens = GetComponentsInChildren<UI_Screen>(true);
@@ -81,7 +72,7 @@ public class UI_System : MonoBehaviour
     {
         if(m_Fader)
         {
-            m_Fader.CrossFadeAlpha(1f, m_FadeInDuration, false);
+            m_Fader.CrossFadeAlpha(1f, m_FadeOutDuration, false);
         }
     }
     

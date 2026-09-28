@@ -1,15 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
-public class GameLoadManager : MonoBehaviour
+public class GameLoadManager : Singleton<GameLoadManager>
 {
-    public static GameLoadManager Instance {get; private set;}
-
     public static int SHIFTS = 10;
+
+    // Orden = índice de color en Events.gameColor
+    static readonly string[] PLAYERS = { "green", "blue", "orange", "red" };
 
     int shift => EconomicModel.Instance.GetShift();
     TMP_Text shiftText => EconomicModel.Instance.shiftText;
@@ -35,50 +34,35 @@ public class GameLoadManager : MonoBehaviour
     public bool GetAppliedEvent() { return appliedEvent; }
     public void SetAppliedEvent(bool appliedEvent) { this.appliedEvent = appliedEvent; }
 
-    private void Awake()
-    {
-        if(Instance != null && Instance != this)
-            Destroy(this);
-        else
-            Instance = this;    
-    }
-
     void Start()
     {
         //PlayerPrefs.DeleteAll();
         if (PlayerPrefs.HasKey("player"))
         {
-            switch(PlayerPrefs.GetString("player"))
-            {
-                case "green":
-                    greenPlayerButton.onClick.Invoke();
-                break;
-
-                case "blue":
-                    bluePlayerButton.onClick.Invoke();
-                break;
-
-                case "orange":
-                    orangePlayerButton.onClick.Invoke();
-                break;
-
-                case "red":
-                    redPlayerButton.onClick.Invoke();
-                break;
-            }
+            SelectPlayer(Array.IndexOf(PLAYERS, PlayerPrefs.GetString("player")));
         }
         else
         {
-            greenPlayerButton.onClick.Invoke();
-            PlayerPrefs.SetString("player", "green");
+            SelectPlayer(0);
+            PlayerPrefs.SetString("player", PLAYERS[0]);
         }
-        
+
         // TURNOS
         if (PlayerPrefs.HasKey("shift"))
             EconomicModel.Instance.SetShift(PlayerPrefs.GetInt("shift"));
 
         if (shift == 0)
             continuarPartidaButton.interactable = false;
+    }
+
+    void SelectPlayer(int index)
+    {
+        Button[] playerButtons = { greenPlayerButton, bluePlayerButton, orangePlayerButton, redPlayerButton };
+        if (index < 0 || index >= playerButtons.Length)
+            return;
+
+        playerButtons[index].onClick.Invoke();
+        Events.Instance.SetCardOutlineColor(index);
     }
 
     void Update()
@@ -88,7 +72,7 @@ public class GameLoadManager : MonoBehaviour
     }
 
     public void NewGame()
-    {        
+    {
         EconomicModel.Instance.NewGame();
         SetFinishedGame(false);
         UpdateShift();
@@ -99,13 +83,10 @@ public class GameLoadManager : MonoBehaviour
         WindowGraph.Instance.ContinueGame();
         EconomicModel.Instance.ContinueGame();
         UpdateShift();
-        SetFinishedGame(PlayerPrefs.GetInt("finishedGame") == 1 ? true : false);
-        SetAppliedEvent(PlayerPrefs.GetInt("appliedEvent") == 1 ? true : false);
+        SetFinishedGame(PlayerPrefs.GetInt("finishedGame") == 1);
+        SetAppliedEvent(PlayerPrefs.GetInt("appliedEvent") == 1);
 
-        if(GetAppliedEvent())
-            UI_System.Instance.SwitchScreens(datosScreen);
-        else
-            UI_System.Instance.SwitchScreens(eventosScreen);        
+        UI_System.Instance.SwitchScreens(GetAppliedEvent() ? datosScreen : eventosScreen);
     }
 
     public void NextShift()
@@ -113,19 +94,17 @@ public class GameLoadManager : MonoBehaviour
         NotificationsManager.Instance.QuestionNotifications("¿Quieres pasar al siguiente turno?");
         NotificationsManager.Instance.SetYesButton(()=>{
             UI_System.Instance.SwitchScreens(eventosScreen);
-            shiftText.text = "Turno " + shift.ToString();
-            eventText.text = "Fase de Eventos\nAño " + shift.ToString();
-            shiftText2.text = "Indicadores de tu Estado\nTurno " + shift.ToString();
+            UpdateShift();
         });
     }
 
     public void UpdateShift()
     {
-        shiftText.text = "Año " + shift.ToString();
-        eventText.text = "Fase de Eventos\nAño " + shift.ToString();
-        shiftText2.text = "Indicadores de tu Estado\nAño " + shift.ToString();
+        shiftText.text = "Año " + shift;
+        eventText.text = "Fase de Eventos\nAño " + shift;
+        shiftText2.text = "Indicadores de tu Estado\nAño " + shift;
     }
-    
+
     public void ExitApp()
     {
         NotificationsManager.Instance.QuestionNotifications("¿Esta seguro que quiere acabar la partida antes de terminar los 10 turnos?");

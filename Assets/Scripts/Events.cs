@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
-using Newtonsoft.Json;
 using TMPro;
 using UnityEngine.EventSystems;
 
@@ -19,79 +15,90 @@ public class Cards
 
 public enum OpcionesResultados
 {
-    PIB, // y
-    Tasa_Inflacion, // inf
     Gasto_Publico, // G
-    Tasa_Impositiva // t
+    Tasa_Impositiva, // t
+    Bonos // M
 }
 
 public enum OpcionesCambios
 {
     Baja,
-    Sube
+    Sube,
+    Vende,
+    Compra
 }
 
-public class Events : MonoBehaviour
+public class Events : Singleton<Events>
 {
-    public static Events Instance {get; private set;}
     UI_Screen datosScreen => GameLoadManager.Instance.datosScreen;
     public TMP_Text eventText;
     public Cards[] cards = new Cards[18];
-
-    void Awake()
-    {
-        if(Instance != null && Instance != this)
-            Destroy(this);
-        else
-            Instance = this;    
-    }
+    public Color[] gameColor = new Color[4];
+    Color color;
+    Outline[] cardOutlines;
+    Color[] originalOutlineColor;
 
     void Start()
     {
+        cardOutlines = new Outline[cards.Length];
+        originalOutlineColor = new Color[cards.Length];
+
         for (int i = 0; i < cards.Length; i++)
         {
             int index = i;
-            cards[index].carta.GetComponent<Button>().onClick.AddListener(() => {
+            GameObject carta = cards[index].carta;
+
+            cardOutlines[index] = carta.GetComponent<Outline>();
+            originalOutlineColor[index] = cardOutlines[index].effectColor;
+
+            carta.GetComponent<Button>().onClick.AddListener(() => {
                 GameLoadManager.Instance.SetAppliedEvent(true);
                 SetResultsValue(index);
             });
+
+            // EventTrigger captura también los eventos de drag/scroll y bloquea el ScrollRect,
+            // por eso se usa un handler que solo escucha PointerDown/PointerUp
+            EventTrigger oldTrigger = carta.GetComponent<EventTrigger>();
+            if (oldTrigger != null)
+                Destroy(oldTrigger);
+
+            CardPressHandler pressHandler = carta.GetComponent<CardPressHandler>();
+            if (pressHandler == null)
+                pressHandler = carta.AddComponent<CardPressHandler>();
+
+            pressHandler.onPointerDown = () => cardOutlines[index].effectColor = color;
+            pressHandler.onPointerUp = () => cardOutlines[index].effectColor = originalOutlineColor[index];
         }
     }
 
-    public void SetResultsValue(int index)
+    public void SetCardOutlineColor(int colorIndex)
+    {
+        color = gameColor[colorIndex];
+    }
+
+    void SetResultsValue(int index)
     {
         NotificationsManager.Instance.QuestionNotifications("¿Es la carta que se ha destapado para este año en el tablero central del juego?");
         NotificationsManager.Instance.SetYesButton(() =>
         {
-            double cambio = (cards[index].opcionesCambios == OpcionesCambios.Baja) ? -cards[index].valor : cards[index].valor;
+            Cards card = cards[index];
+            bool disminuye = card.opcionesCambios == OpcionesCambios.Baja || card.opcionesCambios == OpcionesCambios.Vende;
 
-            switch (cards[index].opcionesResultados)
-            {
-                case OpcionesResultados.PIB:
-                    EconomicModel.Instance.initialGuess[0] += EconomicModel.Instance.initialGuess[0] * cambio; //yInicial del siguiente turno
-                    break;
-                case OpcionesResultados.Tasa_Inflacion:
-                    EconomicModel.Instance.inf += cambio;
-                    break;
-                case OpcionesResultados.Gasto_Publico:
-                    EconomicModel.G += cambio;
-                    break;
-                case OpcionesResultados.Tasa_Impositiva:
-                    EconomicModel.Instance.t += cambio;
-                    break;
-                    
-            }
+            EconomicModel.Instance.ApplyEvent(card.opcionesResultados, disminuye ? -card.valor : card.valor);
 
             UI_System.Instance.SwitchScreens(datosScreen);
-            NotificationsManager.Instance.WarningNotifications(
-                "Los nuevos valores son:\n\nVariación PIB real: " + EconomicModel.Instance.variacionPIB_real.ToString("F2") +
-                "\nTasa inflación: " + EconomicModel.Instance.inf.ToString("F2") + "%" +
-                "\nBalance fiscal: " + EconomicModel.Instance.saldo.ToString("F2") +
-                "\nGasto público: " + EconomicModel.G.ToString() +
-                "\nTasa impositiva: " + EconomicModel.Instance.t.ToString("F2") + 
-                "\nOferta monetaria: " + EconomicModel.M.ToString()
-            );
+            EconomicModel.Instance.NotifyNewValues();
         });
     }
-    
+}
+
+public class CardPressHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+{
+    public Action onPointerDown;
+    public Action onPointerUp;
+
+    public void OnPointerDown(PointerEventData eventData) => onPointerDown?.Invoke();
+
+    // Unity también envía PointerUp cuando empieza un drag del ScrollRect, así que el color se restablece al hacer scroll
+    public void OnPointerUp(PointerEventData eventData) => onPointerUp?.Invoke();
 }

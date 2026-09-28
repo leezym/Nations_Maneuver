@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 using Newtonsoft.Json;
 using TMPro;
-using UnityEngine.EventSystems;
 
 
 [Serializable]
@@ -52,12 +49,11 @@ public class Resultados
     }
 }
 
-public class WindowGraph : MonoBehaviour
+public class WindowGraph : Singleton<WindowGraph>
 {
-    public static WindowGraph Instance {get; private set;}
     static Color color = Color.black;
     static int X_SIZE_BAR = 50;
-    
+
     float graphWidth;
     float graphHeight;
     float yMaximum;
@@ -81,20 +77,12 @@ public class WindowGraph : MonoBehaviour
     [Header("UI Graph Items")]
     [SerializeField] private Sprite circleSprite;
     [SerializeField] private Sprite[] barSprites;
-    
+
     [HideInInspector]
     public List<Turnos> shiftsList;
     List<GameObject> resultGameObjects = new List<GameObject>();
-                        
-    public void ShowDefaultGraph() => defaultButton.onClick.Invoke();
 
-    private void Awake()
-    {
-        if(Instance != null && Instance != this)
-            Destroy(this);
-        else
-            Instance = this;    
-    }
+    public void ShowDefaultGraph() => defaultButton.onClick.Invoke();
 
     void Start()
     {
@@ -121,133 +109,110 @@ public class WindowGraph : MonoBehaviour
         shiftsList = JsonConvert.DeserializeObject<List<Turnos>>(jsonShiftsList);
     }
 
-    public void SetHeight(Transform t)
+    // value: 0 = variación PIB, 1 = tasa inflación, otro = balance fiscal
+    static double GetResultValue(Resultados resultado, int value)
     {
-        Vector3 scale = t.localScale;
-        scale.y = 117;
-        t.localScale = scale;
+        return value == 0 ? resultado.y : value == 1 ? resultado.inf : resultado.saldo;
     }
 
     public void CreateGraph(int value)
     {
         DeleteGraph();
-        GameObject lastCircleGameObject = null;
-               
+
         if(shiftsList.Count > 0)
         {
-            yMaximum = (float)shiftsList.Max(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.saldo)); //valor maximo de los turnos actuales
-            yMininum = (float)shiftsList.Min(turno => (value == 0 ? turno.resultados.y : value == 1 ? turno.resultados.inf : turno.resultados.saldo)); //valor minimo de los turnos actuales
+            //valores maximo y minimo de los turnos actuales, siempre incluyendo el 0
+            double max = double.MinValue, min = double.MaxValue;
+            foreach (Turnos turno in shiftsList)
+            {
+                double v = GetResultValue(turno.resultados, value);
+                if (v > max) max = v;
+                if (v < min) min = v;
+            }
 
-            yMaximum = (yMaximum > 0 ? yMaximum : 0);
-            yMininum = (yMininum < 0 ? yMininum : 0);
+            yMaximum = Mathf.Max((float)max, 0);
+            yMininum = Mathf.Min((float)min, 0);
         }
 
-        float zeroPosition = (0 - yMininum / (yMaximum - yMininum)) * graphHeight; 
+        float yRange = yMaximum - yMininum;
+        float zeroPosition = (0 - yMininum / yRange) * graphHeight; 
         zeroLine.anchoredPosition = new Vector2(0, zeroPosition);
 
+        Vector2? lastCirclePosition = null;
+        float xStep = graphWidth / GameLoadManager.SHIFTS;
+
         for (int i = 0; i < shiftsList.Count; i++) {
-            Resultados resultado = shiftsList[i].resultados;
+            double yValue = GetResultValue(shiftsList[i].resultados, value);
 
-            double yValue = (value == 0 ? resultado.y : value == 1 ? resultado.inf : resultado.saldo);
+            float xPosition = (i + 1) * xStep;
+            float yPosition = (((float)yValue - yMininum) / yRange) * graphHeight;
+            Vector2 circlePosition = new Vector2(xPosition, yPosition);
 
-            float xPosition = (i + 1) * (graphWidth / GameLoadManager.SHIFTS);
-            float yPosition = (((float)yValue - yMininum) / (yMaximum - yMininum)) * graphHeight;
-           
-            GameObject[] barGameObject = CreateBar(value, 0, xPosition, yPosition, zeroPosition, yValue);
-            resultGameObjects.Add(barGameObject[0]);
-            resultGameObjects.Add(barGameObject[1]);
+            CreateBar(value, xPosition, yPosition, zeroPosition, yValue);
+            resultGameObjects.Add(CreateCircle(circlePosition));
 
-            GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition));
-            resultGameObjects.Add(circleGameObject);
+            if (lastCirclePosition.HasValue)
+                resultGameObjects.Add(CreateDotConnection(lastCirclePosition.Value, circlePosition));
 
-            if (lastCircleGameObject != null) {
-                GameObject dotConnection = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
-                resultGameObjects.Add(dotConnection);
-            }
-            lastCircleGameObject = circleGameObject;
+            lastCirclePosition = circlePosition;
         }       
 
         zeroLine.transform.SetAsLastSibling();
-        currentPIB.text = shiftsList[shiftsList.Count - 1].resultados.y.ToString("F2");
-        currentTInf.text = shiftsList[shiftsList.Count - 1].resultados.inf.ToString("F2");
-        currentSaldo.text = shiftsList[shiftsList.Count - 1].resultados.saldo.ToString("F2");
     }
 
-    private GameObject[] CreateBar(int value, float ySize, float xPosition, float yPosition, float zeroPosition, double yValue)
+    // Crea un GameObject UI con Image como hijo del contenedor de la gráfica, anclado abajo a la izquierda
+    private RectTransform CreateGraphImage(string name, Sprite sprite, Color imageColor, Vector2 anchoredPosition, Vector2 sizeDelta)
+    {
+        GameObject gameObject = new GameObject(name, typeof(Image));
+        gameObject.transform.SetParent(graphContainer, false);
+
+        Image image = gameObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.color = imageColor;
+
+        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = anchoredPosition;
+        rectTransform.sizeDelta = sizeDelta;
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+
+        return rectTransform;
+    }
+
+    private void CreateBar(int value, float xPosition, float yPosition, float zeroPosition, double yValue)
     {
         GameObject gameObjectLabel = Instantiate(label, new Vector2(xPosition, yPosition), transform.rotation);
         gameObjectLabel.GetComponentInChildren<TMP_Text>().text = yValue.ToString("F2");
         gameObjectLabel.transform.SetParent(graphContainer, false);
         gameObjectLabel.transform.SetParent(graphGameObject, true);
 
-        
-        if(yPosition > zeroPosition)
-        {
-            ySize = yPosition - zeroPosition;
-            yPosition = zeroPosition;
-        }
-        else if(yPosition < zeroPosition)
-        {
-            ySize = zeroPosition - yPosition;
-        }
-        
-        GameObject gameObjectBar = new GameObject("bar", typeof(Image));
-        gameObjectBar.transform.SetParent(graphContainer, false);
-        gameObjectBar.GetComponent<Image>().sprite = barSprites[value];
-        
-        RectTransform rectTransform = gameObjectBar.GetComponent<RectTransform>();        
-        rectTransform.anchoredPosition = new Vector2(xPosition, yPosition);
-        rectTransform.sizeDelta = new Vector2(X_SIZE_BAR, ySize);
-        rectTransform.pivot = new Vector2(0.5f, 0);
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.zero;
+        // La barra crece desde la línea del cero hacia el valor
+        float ySize = Mathf.Abs(yPosition - zeroPosition);
+        float yBase = Mathf.Min(yPosition, zeroPosition);
 
-        Button button = gameObjectBar.AddComponent<Button>();
-        button.onClick.AddListener(() => {
-            if(gameObjectLabel.activeSelf)
-                gameObjectLabel.SetActive(false);
-            else
-                gameObjectLabel.SetActive(true);
-        });
+        RectTransform bar = CreateGraphImage("bar", barSprites[value], Color.white, new Vector2(xPosition, yBase), new Vector2(X_SIZE_BAR, ySize));
+        bar.pivot = new Vector2(0.5f, 0);
 
-        return new GameObject[] {gameObjectBar, gameObjectLabel};
+        Button button = bar.gameObject.AddComponent<Button>();
+        button.onClick.AddListener(() => gameObjectLabel.SetActive(!gameObjectLabel.activeSelf));
+
+        resultGameObjects.Add(bar.gameObject);
+        resultGameObjects.Add(gameObjectLabel);
     }
 
     private GameObject CreateCircle(Vector2 anchoredPosition)
     {
-        GameObject gameObject = new GameObject("circle", typeof(Image));
-        gameObject.transform.SetParent(graphContainer, false);
-        gameObject.GetComponent<Image>().sprite = circleSprite;
-        gameObject.GetComponent<Image>().color = color;
-
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = new Vector2(15, 15);
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.zero;
-
-        return gameObject;
+        return CreateGraphImage("circle", circleSprite, color, anchoredPosition, new Vector2(15, 15)).gameObject;
     }
 
     private GameObject CreateDotConnection(Vector2 dotPositionA, Vector2 dotPositionB) {
-        GameObject gameObject = new GameObject("dotConnection", typeof(Image));
-        gameObject.transform.SetParent(graphContainer, false);
-        gameObject.GetComponent<Image>().color = color;
-
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-
         Vector2 dir = (dotPositionB - dotPositionA).normalized;
-
         float distance = Vector2.Distance(dotPositionA, dotPositionB);
 
-        rectTransform.sizeDelta = new Vector2(distance, 3f); 
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.anchorMax = Vector2.zero;
-        rectTransform.anchoredPosition = dotPositionA + dir * distance * .5f;
+        RectTransform rectTransform = CreateGraphImage("dotConnection", null, color, dotPositionA + dir * distance * .5f, new Vector2(distance, 3f));
         rectTransform.localEulerAngles = new Vector3(0, 0, GetAngleFromVectorFloat(dir));
 
-        return gameObject;
-
+        return rectTransform.gameObject;
     }
 
     private float GetAngleFromVectorFloat(Vector3 dir)
@@ -261,9 +226,8 @@ public class WindowGraph : MonoBehaviour
 
     public void DeleteGraph()
     {
-        for(int i = 0; i < resultGameObjects.Count; i++)
-        {
-            Destroy(resultGameObjects[i]);
-        }
+        foreach (GameObject resultGameObject in resultGameObjects)
+            Destroy(resultGameObject);
+        resultGameObjects.Clear();
     }
 }

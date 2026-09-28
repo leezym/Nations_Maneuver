@@ -1,0 +1,1 @@
+C:\Users\GreenSQA\Documents\JAVERIANA\Nations Maneuver\Nations_Maneuver\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\4l4s6b6s\obj\armeabi-v7a

@@ -23,6 +23,8 @@ public static class MinpackLikeSolver
         double[] pScaled = new double[n];
         double[] p = new double[n];
         double[] xNew = new double[n];
+        double[] xTemp = new double[n];
+        double[] fTemp = new double[n];
 
         iterations = 0;
         double lambda = lambda0;
@@ -40,7 +42,7 @@ public static class MinpackLikeSolver
             for (int i = 0; i < n; i++)
                 s[i] = Math.Max(Math.Abs(x[i]), 1.0);
 
-            ComputeJacobian(func, x, f, J, stepRel);
+            ComputeJacobian(func, x, f, J, stepRel, xTemp, fTemp);
 
             for (int j = 0; j < n; j++)
             {
@@ -128,14 +130,13 @@ public static class MinpackLikeSolver
         double[] x,
         double[] f,
         double[,] J,
-        double stepRel)
+        double stepRel,
+        double[] xTemp,
+        double[] fTemp)
     {
         int n = x.Length;
-        double[] xTemp = new double[n];
-        double[] fTemp = new double[n];
 
-        for (int j = 0; j < n; j++)
-            xTemp[j] = x[j];
+        Array.Copy(x, xTemp, n);
 
         for (int j = 0; j < n; j++)
         {
